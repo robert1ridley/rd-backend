@@ -1,14 +1,13 @@
 const validator = require('validator');
 const utils = require('../utils');
 var jwt = require('jsonwebtoken');
-var secretKey = require('../index');
 
 exports.addUser = function(req, res, err) {
   const user_name = req.body.user_name;
   const age = req.body.age;
   const password = req.body.password;
   const isNewUserValidated = validateAddUser(user_name, age, password)
-  if (Object.keys(isNewUserValidated).length === 0) {
+  if (!isNewUserValidated.isError) {
     const password_hash = utils.hashPassword(password);
     const data = [user_name, age, password_hash]
     
@@ -17,14 +16,21 @@ exports.addUser = function(req, res, err) {
     let query = db.query(sql, (err, results) => {
       if(err) throw err;
       if(results.length){
-        res.json({ error: {user_exists: "username already in use"} });
-        console.log('User add error')
+        res.status(500).json({
+          error:
+          {
+            user_name: "username already in use"
+          }
+        });
+        console.log('User exists error')
       } else {
         //insert new user if username is unique
         let insertSql = `INSERT INTO Users (user_name, age, password_hash, created_date) 
         VALUES (?, ?, ?, CURRENT_TIMESTAMP)`
         let insertQuery = db.query(insertSql, data, (error, resultData) => {
           if(error) throw error;
+
+          //generate token that will be valid for 24hrs
           const webToken = jwt.sign({user_name: user_name}, req.app.get("superSecret"), {
             expiresIn : 60*24
           })
@@ -78,14 +84,22 @@ exports.createUsersTable = function(req, res) {
 }
 
 const validateAddUser = function(user_name, age, password) {
-  let errors = {};
+  let errors = {
+    isError: false,
+    user_name: null,
+    password: null,
+    age: null
+  };
   if (validator.isEmpty(user_name)) {
+    errors.isError = true
     errors.user_name = "You must enter a username."
   }
   if (!utils.isInteger(age)) {
+    errors.isError = true
     errors.age = "You must enter a valid age."
   }
   if (validator.isEmpty(password)) {
+    errors.isError = true
     errors.password = "You must enter a password."
   }
   return errors;
