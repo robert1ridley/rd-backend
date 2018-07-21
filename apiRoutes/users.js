@@ -15,7 +15,7 @@ exports.addUser = function(req, res, err) {
     let query = db.query(sql, (err, results) => {
       if(err) throw err;
       if(results.length){
-        res.status(500).send({ error: {user_exists: "username already in use"} });
+        res.json({ error: {user_exists: "username already in use"} });
         console.log('User add error')
       } else {
         //insert new user if username is unique
@@ -23,15 +23,19 @@ exports.addUser = function(req, res, err) {
         VALUES (?, ?, ?, CURRENT_TIMESTAMP)`
         let insertQuery = db.query(insertSql, data, (error, resultData) => {
           if(error) throw error;
-          req.session.user = {users_name: user_name, age: age};
-          res.status(200).json({success: true, status: 'New user added successfully'});
+          res.json({
+            success: true,
+            message: 'Enjoy your token!',
+            token: "token",
+            error: null
+          });
           console.log('User added successfully');
         })
       }
     });
   }
   else {
-      res.status(500).send({ error: isNewUserValidated });
+      res.status(500).json({ error: isNewUserValidated });
       console.log('User add error')
   }
 }
@@ -42,7 +46,7 @@ exports.getUsers = function(req, res) {
     let query = db.query(sql, (err, results) => {
         if(err) throw err;
         console.log(results);
-        res.send('Users fetched …');
+        res.send(results);
     });
   }
 };
