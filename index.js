@@ -1,6 +1,7 @@
 const express = require('express');
 const mysql = require('mysql');
 const users = require('./apiRoutes/users');
+const profile = require('./apiRoutes/profile');
 const bodyParser = require('body-parser');
 require("dotenv").config();
 
@@ -37,6 +38,7 @@ exports.secretKey = app.get('superSecret')
 //APIS
 app.post('/adduser', bodyParser.json(), users.addUser);
 app.get('/getusers', users.getUsers);
+app.get('/userprofile', bodyParser.json(), profile.getUserProfile);
 app.get('/removeusertable', users.removeUsersTable);
 app.get('/createuserstable', users.createUsersTable);
 

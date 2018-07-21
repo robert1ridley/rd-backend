@@ -34,9 +34,10 @@ exports.addUser = function(req, res, err) {
           const webToken = jwt.sign({user_name: user_name}, req.app.get("superSecret"), {
             expiresIn : 60*24
           })
+          console.log(webToken);
           res.json({
             success: true,
-            message: 'Enjoy your token!',
+            message: 'Congratulations ' + user_name + '! You have just signed up for R and D Reading.',
             token: webToken,
             error: null
           });
@@ -46,8 +47,8 @@ exports.addUser = function(req, res, err) {
     });
   }
   else {
-      res.status(500).json({ error: isNewUserValidated });
-      console.log('User add error')
+    res.status(500).json({ error: isNewUserValidated });
+    console.log('User add error')
   }
 }
 
