@@ -1,5 +1,7 @@
 const validator = require('validator');
 const utils = require('../utils');
+var jwt = require('jsonwebtoken');
+var secretKey = require('../index');
 
 exports.addUser = function(req, res, err) {
   const user_name = req.body.user_name;
@@ -23,10 +25,13 @@ exports.addUser = function(req, res, err) {
         VALUES (?, ?, ?, CURRENT_TIMESTAMP)`
         let insertQuery = db.query(insertSql, data, (error, resultData) => {
           if(error) throw error;
+          const webToken = jwt.sign({user_name: user_name}, req.app.get("superSecret"), {
+            expiresIn : 60*24
+          })
           res.json({
             success: true,
             message: 'Enjoy your token!',
-            token: "token",
+            token: webToken,
             error: null
           });
           console.log('User added successfully');

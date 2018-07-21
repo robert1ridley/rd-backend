@@ -9,6 +9,7 @@ var DB_HOST = process.env.DB_HOST;
 var DB_USER = process.env.DB_USER;
 var DB_PASSWORD = process.env.DB_PASSWORD;
 var DB_DATABASE = process.env.DB_DATABASE;
+var WEB_TOKEN_SECRET = process.env.WEB_TOKEN_SECRET;
 
 //Create connection
 const db = mysql.createConnection({
@@ -28,6 +29,10 @@ db.connect((err) => {
 
 global.db = db;
 const app = express();
+
+//SECRET KEY FOR WEB TOKEN
+app.set('superSecret', WEB_TOKEN_SECRET);
+exports.secretKey = app.get('superSecret')
 
 //APIS
 app.post('/adduser', bodyParser.json(), users.addUser);
