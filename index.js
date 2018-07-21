@@ -2,13 +2,20 @@ const express = require('express');
 const mysql = require('mysql');
 const users = require('./apiRoutes/users');
 const bodyParser = require('body-parser');
+require("dotenv").config();
+
+//import environment variables for database
+var DB_HOST = process.env.DB_HOST;
+var DB_USER = process.env.DB_USER;
+var DB_PASSWORD = process.env.DB_PASSWORD;
+var DB_DATABASE = process.env.DB_DATABASE;
 
 //Create connection
 const db = mysql.createConnection({
-    host     : 'localhost',
-    user     : 'root',
-    password : '12345',
-    database : 'RandD'
+    host     : DB_HOST,
+    user     : DB_USER,
+    password : DB_PASSWORD,
+    database : DB_DATABASE
 });
 
 //Connect

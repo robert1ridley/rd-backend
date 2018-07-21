@@ -23,6 +23,7 @@ exports.addUser = function(req, res, err) {
         VALUES (?, ?, ?, CURRENT_TIMESTAMP)`
         let insertQuery = db.query(insertSql, data, (error, resultData) => {
           if(error) throw error;
+          req.session.user = {users_name: user_name, age: age};
           res.status(200).json({success: true, status: 'New user added successfully'});
           console.log('User added successfully');
         })
