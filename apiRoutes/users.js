@@ -34,7 +34,6 @@ exports.addUser = function(req, res, err) {
           const webToken = jwt.sign({user_name: user_name}, req.app.get("superSecret"), {
             expiresIn : 60*24
           })
-          console.log(webToken);
           res.json({
             success: true,
             message: 'Congratulations ' + user_name + '! You have just signed up for R and D Reading.',
@@ -50,6 +49,45 @@ exports.addUser = function(req, res, err) {
     res.status(500).json({ error: isNewUserValidated });
     console.log('User add error')
   }
+}
+
+exports.login = function(req, res) {
+  const user_name = req.body.user_name;
+  const password = req.body.password;
+  let sql = `SELECT * FROM Users WHERE user_name = '${user_name}'`
+  let query = db.query(sql, (err, results) => {
+    if(err) throw err;
+    if(!results.length){
+      res.status(500).json({
+        error:
+        {
+          usernameError: "Username not found"
+        }
+      });
+    }
+    else if(results.length) {
+      user = results[0];
+      if(user.password_hash === utils.hashPassword(password)) {
+        //generate token that will be valid for 24hrs
+        const webToken = jwt.sign({user_name: user_name}, req.app.get("superSecret"), {
+          expiresIn : 60*24
+        })
+        res.json({
+          success: true,
+          token: webToken,
+          message: "Well done! You remembered your username and password!"
+        })
+      }
+      else {
+        res.status(500).json({
+          error:
+          {
+            passwordError: "Password incorrect"
+          }
+        });
+      }
+    }
+  })
 }
 
 exports.getUsers = function(req, res) {

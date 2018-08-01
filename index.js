@@ -37,6 +37,7 @@ exports.secretKey = app.get('superSecret')
 
 //APIS
 app.post('/adduser', bodyParser.json(), users.addUser);
+app.post('/login', bodyParser.json(), users.login);
 app.get('/getusers', users.getUsers);
 app.get('/userprofile', bodyParser.json(), profile.getUserProfile);
 app.get('/removeusertable', users.removeUsersTable);

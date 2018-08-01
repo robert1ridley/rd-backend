@@ -14,7 +14,7 @@ exports.getUserProfile = function(req, res, next) {
           let query = db.query(sql, (err, results) => {
               if(err) throw err;
               user = results[0];
-              res.send({
+              res.status(200).send({
                 id: user.id,
                 user_name: user.user_name,
                 age: user.age,
@@ -24,6 +24,9 @@ exports.getUserProfile = function(req, res, next) {
         }
       });
     } catch (err) {
+      res.status(500).send({
+        error: err
+      })
       return next();
     }
   } else {
